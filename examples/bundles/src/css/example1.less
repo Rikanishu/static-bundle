@@ -1,0 +1,43 @@
+/* Less prepare example */
+
+.clearfix {
+  content: " ";
+  visibility: hidden;
+  display: block;
+  height: 0;
+  clear: both;
+}
+
+#header {
+  margin: 0;
+  height: 10px;
+
+  .logo {
+    width: 50px;
+  }
+
+  .nav span {
+    width: 12px;
+  }
+
+}
+
+#content {
+  margin: auto;
+  width: 800px;
+
+  button {
+    font-size: 0.9px;
+    font-weight: bold;
+    width: 12px;
+  }
+
+  .float-container {
+    .clearfix;
+
+    .left {
+      float: left;
+    }
+  }
+
+}
