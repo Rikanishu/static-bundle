@@ -9,7 +9,7 @@ Can be extended with own PrepareHandler's and Bundle's.
 
 Via pip:
 ```
-    pip install git+https://github.com/rikanishu/static-bundle.git
+    pip install static-bundle
 ```
 or from sources
 ```
