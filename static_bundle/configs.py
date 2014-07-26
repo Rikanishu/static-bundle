@@ -26,4 +26,4 @@ class BuilderConfig(object):
         path = _prepare_path(path)
         if os.path.isabs(path):
             return path
-        return os.path.join(os.getcwd(), path)
+        return os.path.abspath(os.path.join(os.getcwd(), path))
