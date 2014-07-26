@@ -10,8 +10,8 @@ setup(
     author_email='rikanishu@gmail.com',
     license='MIT',
     description='Another yet static manager for Python',
-    url='http://github.com/Rikanishu/static_bundle',
-    download_url='https://github.com/Rikanishu/python-var_dump/tarball',
+    url='http://github.com/Rikanishu/static-bundle',
+    download_url='https://github.com/Rikanishu/static-bundle/archive/master.zip',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: BSD License',
