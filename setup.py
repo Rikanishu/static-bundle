@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name='static-bundle',
-    version='0.1.1',
+    version='0.1.2',
     packages=['static_bundle'],
     author='Rikanishu',
     author_email='rikanishu@gmail.com',
