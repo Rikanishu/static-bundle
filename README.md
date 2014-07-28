@@ -74,13 +74,13 @@ conf = BuilderConfig(input_dir="src", output_dir="public", env="development")
 conf = BuilderConfig(input_dir="src", output_dir="public", env="production")
 
 builder = StandardBuilder(conf)
-builder.create_group("Styles").add_bundle(css1)
-builder.create_group("Vendors", minify=True).add_bundle(js1)
-builder.create_group("Application", minify=True).add_bundle(js2)
+builder.create_asset("Styles").add_bundle(css1)
+builder.create_asset("Vendors", minify=True).add_bundle(js1)
+builder.create_asset("Application", minify=True).add_bundle(js2)
 
 # run make_build once, before production deploy and use collect_links on runtime
-# builder.make_build()
 
+# builder.make_build()
 builder.collect_links()
 
 ...
@@ -89,11 +89,11 @@ builder.collect_links()
 # this methods render script and style tags with paths, see their output
 
 #on head
-builder.render_include_group("Styles")
+builder.render_asset("Styles")
 
 #on body end
-builder.render_include_group("Vendors")
-builder.render_include_group("Application")
+builder.render_asset("Vendors")
+builder.render_asset("Application")
 
 ```
 
