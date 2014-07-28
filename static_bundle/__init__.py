@@ -2,6 +2,19 @@
 
 from __future__ import absolute_import
 
+import sys
+import logging
+
+logger = logging.Logger('static_bundle')
+stdouthandler = logging.StreamHandler(sys.stdout)
+stdouthandler.setLevel(logging.DEBUG)
+stdouthandler.setFormatter(logging.Formatter("\033[0;33m%(asctime)s - %(levelname)s - %(message)s\33[0m"))
+logger.addHandler(stdouthandler)
+
+
+def disable_logger_stdout():
+    logger.removeHandler(stdouthandler)
+
 TYPE_JS = 'js'
 TYPE_CSS = 'css'
 
@@ -25,4 +38,5 @@ from static_bundle.handlers import (AbstractPrepareHandler,
 from static_bundle.paths import (AbstractPath,
                                  FilePath,
                                  DirectoryPath)
+
 

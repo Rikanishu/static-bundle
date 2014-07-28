@@ -74,7 +74,8 @@ class BuildGroup(object):
             minifier = self.get_first_bundle().get_default_minifier()
         else:
             minifier = self.minifier
-        return minifier(self)
+        minifier.init_build_group(self)
+        return minifier
 
     def has_bundles(self):
         return len(self.bundles) > 0
@@ -129,9 +130,8 @@ class StandardBuilder(object):
 
         @type group_name: one of(unicode, str)
         """
-        if self.has_group(group_name):
-            return self.build_groups[group_name]
-        raise Exception("Group is not created yet, use has_group for checking")
+        assert self.has_group(group_name), "Group is not created yet, use has_group for checking"
+        return self.build_groups[group_name]
 
     def has_group(self, group_name):
         """

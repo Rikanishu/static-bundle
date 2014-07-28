@@ -5,7 +5,8 @@ import static_bundle
 from static_bundle.utils import _prepare_path
 from static_bundle.paths import FilePath, DirectoryPath
 from static_bundle.files import CssFileResult, JsFileResult
-from static_bundle.minifiers import DefaultMinifier
+from static_bundle.minifiers import DefaultMinifier, UglifyJsMinifier
+from static_bundle.handlers import LessCompilerPrepareHandler
 
 
 class AbstractBundle(object):
@@ -15,16 +16,13 @@ class AbstractBundle(object):
 
     @param path: Relative or absolute path
         If is relative path, it will be concatenated with bundle input dir
-    @param abs_path: True if absolute path passed
     @param: static_dir_name: Public static dir, used "static" by default
 
     @type path: one of (unicode, str)
-    @type abs_path: bool
-    @type static_dir_name: str
-
+    @type prepare_handlers: one of (list, None)
     """
 
-    def __init__(self, path):
+    def __init__(self, path, prepare_handlers=None):
         path = _prepare_path(path)
         abs_path = os.path.isabs(path)
         self.abs_path = abs_path
@@ -35,7 +33,15 @@ class AbstractBundle(object):
             self.abs_bundle_path = None
             self.rel_bundle_path = path
         self.files = []
-        self.prepare_handlers_chain = []
+
+        if prepare_handlers is None:
+            # default handlers
+            self.prepare_handlers_chain = [
+                LessCompilerPrepareHandler()
+            ]
+        else:
+            self.prepare_handlers_chain = prepare_handlers
+
         self.input_dir = None
 
     @property
@@ -127,7 +133,7 @@ class AbstractBundle(object):
         raise NotImplementedError
 
     def get_default_minifier(self):
-        return DefaultMinifier
+        return DefaultMinifier()
 
 
 class JsBundle(AbstractBundle):
@@ -140,6 +146,9 @@ class JsBundle(AbstractBundle):
 
     def get_result_class(self):
         return JsFileResult
+
+    def get_default_minifier(self):
+        return UglifyJsMinifier()
 
 
 class CssBundle(AbstractBundle):

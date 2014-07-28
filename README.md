@@ -55,8 +55,6 @@ from static_bundle import (JsBundle,
 css1 = CssBundle("css")
 css1.add_file("example1.less")
 css1.add_file("example2.css")
-# add for less preparing
-css1.add_prepare_handler(LessCompilerPrepareHandler())
 
 js1 = JsBundle("js")
 js1.add_file("vendors/example1.js")

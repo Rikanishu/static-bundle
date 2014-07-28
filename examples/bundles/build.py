@@ -16,7 +16,6 @@ from static_bundle import (JsBundle,
 css1 = CssBundle("css")
 css1.add_file("example1.less")
 css1.add_file("example2.css")
-css1.add_prepare_handler(LessCompilerPrepareHandler())
 
 js1 = JsBundle("js")
 js1.add_file("vendors/example1.js")
@@ -41,9 +40,9 @@ def check():
     development_builder = create_builder(conf)
     development_builder.collect_links()
 
-    print("=" * 20)
+    print("=" * 60)
     print(" Development static data ")
-    print("=" * 20)
+    print("=" * 60)
     print(development_builder.render_include_group("Styles"))
     print("Vendors:")
     print(development_builder.render_include_group("Vendors"))
@@ -55,9 +54,9 @@ def check():
     production_builder.make_build()
     production_builder.collect_links()
 
-    print("=" * 20)
+    print("=" * 60)
     print(" Production static data [with bundle generation] ")
-    print("=" * 20)
+    print("=" * 60)
     print("Styles:")
     print(production_builder.render_include_group("Styles"))
     print("Vendors:")
