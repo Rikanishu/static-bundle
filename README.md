@@ -16,6 +16,10 @@ or from sources
     python setup.py install
 ```
 
+### Extensions ###
+
+ - [Flask extension](https://github.com/Rikanishu/flask-static-bundle)
+
 ### Example ###
 
 See examples/bundles or check this example
