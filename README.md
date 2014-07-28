@@ -97,7 +97,7 @@ builder.render_asset("Application")
 
 ```
 
-`builder.render_include_group(...)` output:
+`builder.render_asset(...)` output:
 ```
 Styles:
 <link rel="stylesheet" href="/css/example1.css" />
