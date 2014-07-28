@@ -4,9 +4,9 @@ import os
 from static_bundle.utils import _write, _copy_file
 
 
-class BuildGroup(object):
+class Asset(object):
     """
-    Group of bundles for group
+    Asset / Build group type
     Bundles in different build groups can be minified or prepared with different methods
     Objects has a fluent interface
 
@@ -74,7 +74,7 @@ class BuildGroup(object):
             minifier = self.get_first_bundle().get_default_minifier()
         else:
             minifier = self.minifier
-        minifier.init_build_group(self)
+        minifier.init_asset(self)
         return minifier
 
     def has_bundles(self):
@@ -102,76 +102,80 @@ class StandardBuilder(object):
 
     def __init__(self, config):
         self.config = config
-        self.build_groups = {}
+        self.assets = {}
 
-    def create_group(self, group_name, **kwargs):
+    def create_asset(self, name, **kwargs):
         """
-        Create build group
+        Create asset
 
-        @type group_name: one of(unicode, str)
-        @rtype: BuildGroup
+        @type name: one of(unicode, str)
+        @rtype: Asset
         """
-        group = BuildGroup(self, group_name, **kwargs)
-        self.build_groups[group_name] = group
+        group = Asset(self, name, **kwargs)
+        self.assets[name] = group
         return group
 
-    def remove_group(self, group_name):
+    def remove_asset(self, name):
         """
-        Remove build group by name
+        Remove asset by name
 
-        @type group_name: one of(unicode, str)
+        @type name: one of(unicode, str)
         """
-        if group_name in self.build_groups:
-            del self.build_groups[group_name]
+        if name in self.assets:
+            del self.assets[name]
 
-    def get_group(self, group_name):
+    def get_asset(self, name):
         """
-        Get build group by name
+        Get asset by name
 
-        @type group_name: one of(unicode, str)
+        @type name: one of(unicode, str)
         """
-        assert self.has_group(group_name), "Group is not created yet, use has_group for checking"
-        return self.build_groups[group_name]
+        assert self.has_asset(name), "Asset is not created yet, use has_asset for checking"
+        return self.assets[name]
 
-    def has_group(self, group_name):
+    def has_asset(self, name):
         """
-        Check group exists by group name
+        Check asset exists by name
 
-        @type group_name: one of(unicode, str)
+        @type name: one of(unicode, str)
         """
-        return group_name in self.build_groups
+        return name in self.assets
 
-    def render_include_group(self, group_name):
+    def render_asset(self, name):
         result = ""
-        if self.has_group(group_name):
-            group = self.get_group(group_name)
-            if group.files:
-                for f in group.files:
+        if self.has_asset(name):
+            asset = self.get_asset(name)
+            if asset.files:
+                for f in asset.files:
                     result += f.render_include() + "\r\n"
         return result
+
+    def render_include_group(self, name):
+            return self.render_asset(name)
 
     def collect_links(self, env=None):
         """
         Return links without build files
         """
-        for build_group in self.build_groups.values():
-            if build_group.has_bundles():
-                build_group.collect_files()
+        for asset in self.assets.values():
+            if asset.has_bundles():
+                asset.collect_files()
         if env is None:
             env = self.config.env
         if env == "production":
             self._minify(emulate=True)
+        self._add_url_prefix()
 
     def make_build(self):
         """
         Move files / make static build
         """
         copy_excludes = {}
-        for build_group in self.build_groups.values():
-            if build_group.has_bundles():
-                build_group.collect_files()
-                if build_group.minify and build_group.files:
-                    for f in build_group.files:
+        for asset in self.assets.values():
+            if asset.has_bundles():
+                asset.collect_files()
+                if asset.minify and asset.files:
+                    for f in asset.files:
                         copy_excludes[f.abs_path] = f
         if not os.path.exists(self.config.output_dir):
             os.makedirs(self.config.output_dir)
@@ -184,18 +188,24 @@ class StandardBuilder(object):
         self._minify()
 
     def _minify(self, emulate=False):
-        for build_group in self.build_groups.values():
-            if build_group.minify and build_group.files:
-                bundle = build_group.get_first_bundle()
-                group_file = bundle.get_result_class()
-                group_file_name = build_group.name + "." + bundle.get_extension()
-                group_file_abs_path = os.path.join(self.config.output_dir, group_file_name)
-                group_file_rel_path = "/" + group_file_name
+        for asset in self.assets.values():
+            if asset.minify and asset.files:
+                bundle = asset.get_first_bundle()
+                asset_file = bundle.get_result_class()
+                asset_file_name = asset.name + "." + bundle.get_extension()
+                asset_file_abs_path = os.path.join(self.config.output_dir, asset_file_name)
+                asset_file_rel_path = '/' + asset_file_name
                 if not emulate:
-                    group_minifier = build_group.get_minifier()
+                    group_minifier = asset.get_minifier()
                     text = group_minifier.before()
-                    for f in build_group.files:
+                    for f in asset.files:
                         text = group_minifier.contents(f, text)
                     text = group_minifier.after(text)
-                    _write(group_file_abs_path, text, build_group.files_encoding)
-                build_group.files = [group_file(group_file_rel_path, group_file_abs_path)]
+                    _write(asset_file_abs_path, text, asset.files_encoding)
+                asset.files = [asset_file(asset_file_rel_path, asset_file_abs_path)]
+
+    def _add_url_prefix(self):
+        for asset in self.assets.values():
+            if asset.files:
+                for file_result in asset.files:
+                    file_result.rel_path = self.config.url_prefix + file_result.rel_path.lstrip('/')

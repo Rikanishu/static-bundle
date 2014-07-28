@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import os
-from static_bundle.utils import _prepare_path, _split_path
+from static_bundle.utils import _prepare_path
 
 
 class BuilderConfig(object):
@@ -15,10 +15,11 @@ class BuilderConfig(object):
 
      """
 
-    def __init__(self, input_dir, output_dir, env='production'):
+    def __init__(self, input_dir, output_dir, env='production', url_prefix='/'):
         assert input_dir and output_dir, "Input and output paths are required"
         self.input_dir = BuilderConfig.init_path(input_dir)
         self.output_dir = BuilderConfig.init_path(output_dir)
+        self.url_prefix = url_prefix
         self.env = env
 
     @classmethod

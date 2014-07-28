@@ -1,6 +1,7 @@
 # encoding: utf-8
 
-import os, subprocess
+import os
+import subprocess
 
 
 class AbstractPrepareHandler(object):
@@ -21,7 +22,6 @@ class AbstractPrepareHandler(object):
 
 
 class LessCompilerPrepareHandler(AbstractPrepareHandler):
-
     def __init__(self, cmd="lessc", postfix=""):
         self.cmd = cmd
         self.postfix = postfix

@@ -25,7 +25,7 @@ from static_bundle.bundles import (CssBundle,
                                    JsBundle,
                                    AbstractBundle)
 
-from static_bundle.builders import (BuildGroup,
+from static_bundle.builders import (Asset,
                                     StandardBuilder)
 
 from static_bundle.files import (JsFileResult,

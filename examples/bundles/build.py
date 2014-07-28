@@ -1,17 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
-import os
-import sys
-
-# for testing
-PACKAGE_ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
-sys.path.append(PACKAGE_ROOT)
 
 from static_bundle import (JsBundle,
                            StandardBuilder,
                            BuilderConfig,
-                           CssBundle,
-                           LessCompilerPrepareHandler)
+                           CssBundle)
 
 css1 = CssBundle("css")
 css1.add_file("example1.less")
@@ -29,9 +22,9 @@ js2.add_directory("modules")
 
 def create_builder(conf):
     builder = StandardBuilder(conf)
-    builder.create_group("Styles").add_bundle(css1)
-    builder.create_group("Vendors", minify=True).add_bundle(js1)
-    builder.create_group("Application", minify=True).add_bundle(js2)
+    builder.create_asset("Styles").add_bundle(css1)
+    builder.create_asset("Vendors", minify=True).add_bundle(js1)
+    builder.create_asset("Application", minify=True).add_bundle(js2)
     return builder
 
 
@@ -43,11 +36,11 @@ def check():
     print("=" * 60)
     print(" Development static data ")
     print("=" * 60)
-    print(development_builder.render_include_group("Styles"))
+    print(development_builder.render_asset("Styles"))
     print("Vendors:")
-    print(development_builder.render_include_group("Vendors"))
+    print(development_builder.render_asset("Vendors"))
     print("Application:")
-    print(development_builder.render_include_group("Application"))
+    print(development_builder.render_asset("Application"))
 
     conf.env = "production"
     production_builder = create_builder(conf)
@@ -58,11 +51,11 @@ def check():
     print(" Production static data [with bundle generation] ")
     print("=" * 60)
     print("Styles:")
-    print(production_builder.render_include_group("Styles"))
+    print(production_builder.render_asset("Styles"))
     print("Vendors:")
-    print(production_builder.render_include_group("Vendors"))
+    print(production_builder.render_asset("Vendors"))
     print("Application:")
-    print(production_builder.render_include_group("Application"))
+    print(production_builder.render_asset("Application"))
 
 
 if __name__ == '__main__':

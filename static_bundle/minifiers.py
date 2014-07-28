@@ -12,13 +12,13 @@ class DefaultMinifier(object):
 
     """
 
-    def init_build_group(self, build_group):
+    def init_asset(self, asset):
         """
         Called before build
 
-        @type build_group: static_bundle.builders.BuildGroup
+        @type asset: static_bundle.builders.Asset
         """
-        self.build_group = build_group
+        self.asset = asset
 
     def before(self):
         """
@@ -50,7 +50,7 @@ class DefaultMinifier(object):
         return text
 
     def _read(self, path):
-        return _read(path, self.build_group.files_encoding)
+        return _read(path, self.asset.files_encoding)
 
 
 class UglifyJsMinifier(DefaultMinifier):
