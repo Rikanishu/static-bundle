@@ -110,4 +110,20 @@ Application:
 <script type="text/javascript" src="/js/include/modules/module1.js"></script>
 <script type="text/javascript" src="/js/include/modules/module2.js"></script>
 <script type="text/javascript" src="/js/include/modules/module3.js"></script>
+
+```
+
+and when production environment used:
+
+```
+Styles:
+<link rel="stylesheet" href="/css/example1.css" />
+<link rel="stylesheet" href="/css/example2.css" />
+
+Vendors:
+<script type="text/javascript" src="/Vendors.js"></script>
+
+Application:
+<script type="text/javascript" src="/Application.js"></script>
+
 ```
