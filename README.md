@@ -1,5 +1,5 @@
 # static-bundle #
-**Another yet static manager for Python**
+**Yet another static manager for Python**
 
 ---
 A set of base utilities which provide static management and builds making.

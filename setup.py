@@ -9,7 +9,7 @@ setup(
     author='Rikanishu',
     author_email='rikanishu@gmail.com',
     license='MIT',
-    description='Another yet static manager for Python',
+    description='Yet another static manager for Python',
     url='http://github.com/Rikanishu/static-bundle',
     download_url='https://github.com/Rikanishu/static-bundle/archive/master.zip',
     classifiers=[
