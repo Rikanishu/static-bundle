@@ -49,8 +49,7 @@ Example code:
 from static_bundle import (JsBundle,
                            StandardBuilder,
                            BuilderConfig,
-                           CssBundle,
-                           LessCompilerPrepareHandler)
+                           CssBundle)
 
 css1 = CssBundle("css")
 css1.add_file("example1.less")
