@@ -27,7 +27,7 @@ class DefaultMinifier(object):
 
         @rtype: one of (unicode, str)
         """
-        return ""
+        return u''
 
     def contents(self, f, text):
         """
@@ -73,12 +73,13 @@ class UglifyJsMinifier(DefaultMinifier):
             import subprocess
             pipe = subprocess.Popen([self.cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
             if pipe.poll() is not 0:
-                stdout, stderr = pipe.communicate(content)
+                stdout, stderr = pipe.communicate(content.encode(self.asset.files_encoding))
                 if stderr:
+                    stderr = stderr.decode(self.asset.files_encoding)
                     logger.warning("[UglifyJS] Non-empty stderr: %s" % stderr)
                 if pipe.poll() is not 0:
                     pipe.terminate()
-                return stdout
+                return stdout.decode(self.asset.files_encoding)
         except OSError as e:
             if e.errno == 2:
                 logger.warning("[UglifyJS] UglifyJS executable is required for minify: %s" % e)
