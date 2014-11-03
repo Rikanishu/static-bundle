@@ -77,7 +77,7 @@ builder.create_asset("Styles").add_bundle(css1)
 builder.create_asset("Vendors", minify=True).add_bundle(js1)
 builder.create_asset("Application", minify=True).add_bundle(js2)
 
-# run make_build once, before production deploy and use collect_links on runtime
+# run make_build once, before production deploy was maked and use collect_links on runtime
 
 # builder.make_build()
 builder.collect_links()
@@ -85,7 +85,7 @@ builder.collect_links()
 ...
 
 # and in template:
-# this methods render script and style tags with paths, see their output
+# this methods render script and style tags with paths, see their outputs
 
 #on head
 builder.render_asset("Styles")
