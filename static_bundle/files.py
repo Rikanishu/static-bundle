@@ -13,9 +13,9 @@ class StaticFileResult(object):
     @type: path_absolute: one of (unicode, str, None)
     """
 
-    def __init__(self, path_relative, path_absolute=None):
-        self.rel_path = path_relative
-        self.abs_path = path_absolute
+    def __init__(self, relative_path, absolute_path=None):
+        self.rel_path = relative_path
+        self.abs_path = absolute_path
 
     def render_include(self):
         """
