@@ -3,7 +3,7 @@
 
 ---
 A set of base utilities which provide static management and builds making.
-Can be extended with own PrepareHandler's and Bundle's.
+Can be extended by inherit some system classes for your needs. For example with own PrepareHandler's and Bundle's.
 
 ### Installation ###
 
@@ -22,9 +22,9 @@ or from sources
 
 ### Example ###
 
-See examples/bundles or check this example
+See examples/bundles or check this example.
 
-Static directory tree:
+Suppose your application has the following static files directory tree:
 
 ```
 ├── css
@@ -43,7 +43,7 @@ Static directory tree:
         └── example2.js
 ```
 
-Example code:
+So you need to declare some bundles config to gain builds making and collecting links:
 
 ```python
 from static_bundle import (JsBundle,
@@ -77,7 +77,7 @@ builder.create_asset("Styles").add_bundle(css1)
 builder.create_asset("Vendors", minify=True).add_bundle(js1)
 builder.create_asset("Application", minify=True).add_bundle(js2)
 
-# run make_build once, before production deploy and use collect_links on runtime
+# run make_build once, before production deploy was maked and use collect_links on runtime
 
 # builder.make_build()
 builder.collect_links()
@@ -85,7 +85,7 @@ builder.collect_links()
 ...
 
 # and in template:
-# this methods render script and style tags with paths, see their output
+# this methods render script and style tags with paths, see their outputs
 
 #on head
 builder.render_asset("Styles")
@@ -96,7 +96,10 @@ builder.render_asset("Application")
 
 ```
 
-`builder.render_asset(...)` output:
+And also you need to render tags in template.
+For example this is builder asset output in development environment
+`builder.render_asset(...)` :
+
 ```
 Styles:
 <link rel="stylesheet" href="/css/example1.css" />
@@ -114,7 +117,7 @@ Application:
 
 ```
 
-and when production environment used:
+And the same function output when the production environment used:
 
 ```
 Styles:
