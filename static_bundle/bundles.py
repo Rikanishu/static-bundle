@@ -129,7 +129,7 @@ class AbstractBundle(object):
     def get_type(self):
         raise NotImplementedError
 
-    def get_result_class(self):
+    def get_file_cls(self):
         raise NotImplementedError
 
     def get_default_minifier(self):
@@ -144,7 +144,7 @@ class JsBundle(AbstractBundle):
     def get_type(self):
         return static_bundle.TYPE_JS
 
-    def get_result_class(self):
+    def get_file_cls(self):
         return JsFileResult
 
     def get_default_minifier(self):
@@ -159,5 +159,5 @@ class CssBundle(AbstractBundle):
     def get_type(self):
         return static_bundle.TYPE_CSS
 
-    def get_result_class(self):
+    def get_file_cls(self):
         return CssFileResult

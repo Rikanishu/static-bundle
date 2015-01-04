@@ -191,7 +191,7 @@ class StandardBuilder(object):
         for asset in self.assets.values():
             if asset.minify and asset.files:
                 bundle = asset.get_first_bundle()
-                asset_file = bundle.get_result_class()
+                asset_file = bundle.get_file_cls()
                 asset_file_name = asset.name + "." + bundle.get_extension()
                 asset_file_abs_path = os.path.join(self.config.output_dir, asset_file_name)
                 asset_file_rel_path = '/' + asset_file_name

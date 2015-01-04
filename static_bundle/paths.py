@@ -53,7 +53,7 @@ class FilePath(AbstractPath):
         @inheritdoc
         """
         abs_path, rel_path = self.get_abs_and_rel_paths(self.bundle.path, self.file_path, self.bundle.input_dir)
-        result_class = self.bundle.get_result_class()
+        result_class = self.bundle.get_file_cls()
         return [result_class(rel_path, abs_path)]
 
 
@@ -83,6 +83,6 @@ class DirectoryPath(AbstractPath):
             for fpath in files:
                 if fpath.endswith(ext) and (not self.exclusions or all(fpath != n for n in self.exclusions)):
                     abs_path, rel_path = self.get_abs_and_rel_paths(root, fpath, self.bundle.input_dir)
-                    result_class = self.bundle.get_result_class()
+                    result_class = self.bundle.get_file_cls()
                     result_files.append(result_class(rel_path, abs_path))
         return result_files
