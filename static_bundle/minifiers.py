@@ -53,22 +53,28 @@ class DefaultMinifier(object):
         return _read(path, self.asset.files_encoding)
 
 
-class UglifyJsMinifier(DefaultMinifier):
+class ExternalMinifier(DefaultMinifier):
     """
-    Minifier class for UglifyJS
+    Base minifier for some external commands
     """
+    default_command = ''
+    minifier_name = 'Minifier'
 
-    def __init__(self, cmd='uglifyjs'):
+    def __init__(self, cmd=None):
         self.cmd = cmd
+        if self.cmd is None:
+            self.cmd = self.default_command
+        if self.cmd is None:
+            raise Exception('Unknown minifier command')
 
     def contents(self, f, text):
         file_content = self._read(f.abs_path) + "\r\n"
-        if f.type == static_bundle.TYPE_JS:
-            file_content = self.uglify(file_content)
+        if self.is_file_allowed(f):
+            file_content = self.minify(file_content)
         text += file_content
         return text
 
-    def uglify(self, content):
+    def minify(self, content):
         try:
             import subprocess
             pipe = subprocess.Popen([self.cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -76,16 +82,37 @@ class UglifyJsMinifier(DefaultMinifier):
                 stdout, stderr = pipe.communicate(content.encode(self.asset.files_encoding))
                 if stderr:
                     stderr = stderr.decode(self.asset.files_encoding)
-                    logger.warning("[UglifyJS] Non-empty stderr: %s" % stderr)
+                    logger.warning("[%s] Non-empty stderr: %s" % (self.minifier_name, stderr))
                 if pipe.poll() is not 0:
                     pipe.terminate()
                 return stdout.decode(self.asset.files_encoding)
         except OSError as e:
             if e.errno == 2:
-                logger.warning("[UglifyJS] UglifyJS executable is required for minify: %s" % e)
+                logger.warning("[%s] Can't find executable for minify: %s" % (self.minifier_name, e))
             else:
-                logger.warning("[UglifyJS] Error: %s" % e)
+                logger.warning("[%s] Error: %s" % (self.minifier_name, e))
         except Exception as e:
-            logger.warning("[UglifyJS] Error    : %s" % e)
+            logger.warning("[%s] Error : %s" % (self.minifier_name, e))
 
         return content
+
+
+    def is_file_allowed(self, f):
+        return True
+
+
+class UglifyJsMinifier(ExternalMinifier):
+
+    default_command = 'uglifyjs'
+    minifier_name = 'UglifyJS'
+
+    def is_file_allowed(self, f):
+        return f.type == static_bundle.TYPE_JS
+
+class UglifyCssMinifier(ExternalMinifier):
+
+    default_command = 'uglifycss'
+    minifier_name = 'UglifyCSS'
+
+    def is_file_allowed(self, f):
+        return f.type == static_bundle.TYPE_CSS

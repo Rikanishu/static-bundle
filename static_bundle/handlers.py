@@ -24,7 +24,7 @@ class AbstractPrepareHandler(object):
 class LessCompilerPrepareHandler(AbstractPrepareHandler):
 
     def __init__(self, cmd="lessc", prefix="", postfix="", compress=False, compiler_flags=None,
-                 output_dir=None):
+                 output_dir=None, force=False):
         self.cmd = cmd
         self.postfix = postfix
         self.prefix = prefix
@@ -34,6 +34,7 @@ class LessCompilerPrepareHandler(AbstractPrepareHandler):
                 compiler_flags.append('--compress')
         self.compiler_flags = compiler_flags
         self.output_dir = output_dir
+        self.force = force
 
     def prepare(self, input_files, bundle):
         """
@@ -67,7 +68,7 @@ class LessCompilerPrepareHandler(AbstractPrepareHandler):
         if os.path.isfile(output_file.abs_path):
             out_modify_time = os.path.getmtime(output_file.abs_path)
         in_modify_time = os.path.getmtime(input_file.abs_path)
-        if in_modify_time >= out_modify_time:
+        if in_modify_time >= out_modify_time or self.force:
             flags = ' '.join(self.compiler_flags)
             subprocess.call([self.cmd, flags, input_file.abs_path, output_file.abs_path], shell=False)
 
