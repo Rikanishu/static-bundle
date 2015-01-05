@@ -5,7 +5,7 @@ import static_bundle
 from static_bundle.utils import _prepare_path
 from static_bundle.paths import FilePath, DirectoryPath
 from static_bundle.files import CssFileResult, JsFileResult
-from static_bundle.minifiers import DefaultMinifier, UglifyJsMinifier, UglifyCSSMinifier
+from static_bundle.minifiers import DefaultMinifier, UglifyJsMinifier, UglifyCssMinifier
 from static_bundle.handlers import LessCompilerPrepareHandler
 
 
@@ -163,4 +163,4 @@ class CssBundle(AbstractBundle):
         return CssFileResult
 
     def get_default_minifier(self):
-        return UglifyCSSMinifier()
+        return UglifyCssMinifier()
