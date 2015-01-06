@@ -22,7 +22,7 @@ or from sources
 
 ### Example ###
 
-See examples/bundles or check this example.
+See ```examples/bundles``` or check this example.
 
 Suppose your application has the following static files directory tree:
 
