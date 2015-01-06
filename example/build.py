@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import sys
+sys.path.append('..')
+
 from static_bundle import (JsBundle,
                            StandardBuilder,
                            BuilderConfig,
@@ -29,7 +32,7 @@ def create_builder(conf):
 
 
 def check():
-    conf = BuilderConfig(input_dir="src", output_dir="public", env="development")
+    conf = BuilderConfig(input_dir="src", output_dir="public", env="development", copy_only_bundles=True)
     development_builder = create_builder(conf)
     development_builder.collect_links()
 

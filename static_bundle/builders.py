@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 import os
+import static_bundle
 from static_bundle.utils import write_to_file, copy_file
 
 
@@ -68,13 +69,20 @@ class Asset(object):
         return self
 
     def get_minifier(self):
+        """
+        Asset minifier
+        Uses default minifier in bundle if it's not defined
+
+        :rtype: static_bundle.minifiers.DefaultMinifier|None
+        """
         if self.minifier is None:
             if not self.has_bundles():
                 raise Exception("Unable to get default minifier, no bundles in build group")
             minifier = self.get_first_bundle().get_default_minifier()
         else:
             minifier = self.minifier
-        minifier.init_asset(self)
+        if minifier:
+            minifier.init_asset(self)
         return minifier
 
     def has_bundles(self):
@@ -142,6 +150,12 @@ class StandardBuilder(object):
         return name in self.assets
 
     def render_asset(self, name):
+        """
+        Render all includes in asset by names
+
+        :type name: str|unicode
+        :rtype: str|unicode
+        """
         result = ""
         if self.has_asset(name):
             asset = self.get_asset(name)
@@ -151,7 +165,10 @@ class StandardBuilder(object):
         return result
 
     def render_include_group(self, name):
-            return self.render_asset(name)
+        """
+        Alias for render_asset method
+        """
+        return self.render_asset(name)
 
     def collect_links(self, env=None):
         """
@@ -162,7 +179,7 @@ class StandardBuilder(object):
                 asset.collect_files()
         if env is None:
             env = self.config.env
-        if env == "production":
+        if env == static_bundle.ENV_PRODUCTION:
             self._minify(emulate=True)
         self._add_url_prefix()
 
@@ -170,39 +187,52 @@ class StandardBuilder(object):
         """
         Move files / make static build
         """
-        copy_excludes = {}
+
         for asset in self.assets.values():
             if asset.has_bundles():
                 asset.collect_files()
+        if not os.path.exists(self.config.output_dir):
+            os.makedirs(self.config.output_dir)
+        if self.config.copy_only_bundles:
+            for asset in self.assets.values():
+                if not asset.minify and asset.files:
+                    for f in asset.files:
+                        self._copy_file(f.abs_path)
+        else:
+            copy_excludes = {}
+            for asset in self.assets.values():
                 if asset.minify and asset.files:
                     for f in asset.files:
                         copy_excludes[f.abs_path] = f
-        if not os.path.exists(self.config.output_dir):
-            os.makedirs(self.config.output_dir)
-        for root, dirs, files in os.walk(self.config.input_dir):
-            for fpath in files:
-                current_file_path = os.path.join(root, fpath)
-                if current_file_path not in copy_excludes:
-                    copy_file(current_file_path,
-                               current_file_path.replace(self.config.input_dir, self.config.output_dir, 1))
+            for root, dirs, files in os.walk(self.config.input_dir):
+                for fpath in files:
+                    current_file_path = os.path.join(root, fpath)
+                    if current_file_path not in copy_excludes:
+                        self._copy_file(current_file_path)
         self._minify()
+
+    def _copy_file(self, path):
+        copy_file(path, path.replace(self.config.input_dir, self.config.output_dir, 1))
 
     def _minify(self, emulate=False):
         for asset in self.assets.values():
             if asset.minify and asset.files:
-                bundle = asset.get_first_bundle()
-                asset_file = bundle.get_file_cls()
-                asset_file_name = asset.name + "." + bundle.get_extension()
-                asset_file_abs_path = os.path.join(self.config.output_dir, asset_file_name)
-                asset_file_rel_path = '/' + asset_file_name
-                if not emulate:
-                    group_minifier = asset.get_minifier()
-                    text = group_minifier.before()
-                    for f in asset.files:
-                        text = group_minifier.contents(f, text)
-                    text = group_minifier.after(text)
-                    write_to_file(asset_file_abs_path, text, asset.files_encoding)
-                asset.files = [asset_file(asset_file_rel_path, asset_file_abs_path)]
+                asset_minifier = asset.get_minifier()
+                if asset_minifier:
+                    bundle = asset.get_first_bundle()
+                    asset_file = bundle.get_file_cls()
+                    asset_file_name = asset.name + "." + bundle.get_extension()
+                    asset_file_abs_path = os.path.join(self.config.output_dir, asset_file_name)
+                    asset_file_rel_path = '/' + asset_file_name
+                    if not emulate:
+                        text = asset_minifier.before()
+                        for f in asset.files:
+                            text = asset_minifier.contents(f, text)
+                        text = asset_minifier.after(text)
+                        write_to_file(asset_file_abs_path, text, asset.files_encoding)
+                    asset.files = [asset_file(asset_file_rel_path, asset_file_abs_path)]
+                else:
+                    static_bundle.logger.warning("Minifier is not defined for asset. Skipped.")
 
     def _add_url_prefix(self):
         for asset in self.assets.values():

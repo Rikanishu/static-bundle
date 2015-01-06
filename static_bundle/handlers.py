@@ -2,6 +2,7 @@
 
 import os
 import subprocess
+from static_bundle import utils
 
 
 class AbstractPrepareHandler(object):
@@ -41,13 +42,14 @@ class LessCompilerPrepareHandler(AbstractPrepareHandler):
     def prepare(self, input_files, bundle):
         """
         :type input_files: list[static_bundle.files.StaticFileResult]
-        :type bundle: list[static_bundle.bundles.AbstractBundle]
+        :type bundle: static_bundle.bundles.AbstractBundle
         :rtype: list
         """
         out = []
         for input_file in input_files:
             if input_file.extension == "less" and os.path.isfile(input_file.abs_path):
                 output_file = self.get_compile_file(input_file, bundle)
+                print output_file.abs_path, output_file.rel_path
                 self.compile(input_file, output_file)
                 out.append(output_file)
             else:
@@ -55,12 +57,22 @@ class LessCompilerPrepareHandler(AbstractPrepareHandler):
         return out
 
     def get_compile_file(self, input_file, bundle):
-        result_file_class = bundle.get_file_cls()
-
-        return result_file_class(
-            self.replace_file_name(input_file.rel_path),
-            self.replace_file_name(input_file.abs_path)
-        )
+        file_class = bundle.get_file_cls()
+        if self.output_dir:
+            out_dir = utils.prepare_path([bundle.abs_bundle_path, self.output_dir])
+            if not os.path.exists(out_dir):
+                os.makedirs(out_dir)
+            rel = input_file.rel_path
+            filename = rel.replace(bundle.rel_bundle_path, '').strip(os.sep).replace(os.sep, '.')
+            return file_class(
+                self.replace_file_name(bundle.rel_bundle_path + '/' + self.output_dir.strip('/') + '/' + filename),
+                self.replace_file_name(utils.prepare_path([bundle.abs_bundle_path, self.output_dir, filename]))
+            )
+        else:
+            return file_class(
+                self.replace_file_name(input_file.rel_path),
+                self.replace_file_name(input_file.abs_path)
+            )
 
     def replace_file_name(self, path):
         return path.replace(".less", self.postfix + ".css")

@@ -51,3 +51,13 @@ class JsFileResult(StaticFileResult):
     @property
     def type(self):
         return static_bundle.TYPE_JS
+
+
+class OtherFileResult(StaticFileResult):
+
+    def render_include(self):
+        raise Exception('Including is not supported for other files')
+
+    @property
+    def type(self):
+        return static_bundle.TYPE_OTHER

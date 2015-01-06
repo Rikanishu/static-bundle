@@ -15,12 +15,13 @@ class BuilderConfig(object):
 
      """
 
-    def __init__(self, input_dir, output_dir, env='production', url_prefix='/'):
+    def __init__(self, input_dir, output_dir, env='production', url_prefix='/', copy_only_bundles=False):
         assert input_dir and output_dir, "Input and output paths are required"
         self.input_dir = BuilderConfig.init_path(input_dir)
         self.output_dir = BuilderConfig.init_path(output_dir)
         self.url_prefix = url_prefix
         self.env = env
+        self.copy_only_bundles=copy_only_bundles
 
     @classmethod
     def init_path(cls, path):

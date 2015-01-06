@@ -17,12 +17,17 @@ def disable_logger_stdout():
 
 TYPE_JS = 'js'
 TYPE_CSS = 'css'
+TYPE_OTHER = 'other'
+
+ENV_PRODUCTION = 'production'
+ENV_DEVELOPMENT = 'development'
 
 from static_bundle.minifiers import DefaultMinifier
 from static_bundle.configs import BuilderConfig
 
 from static_bundle.bundles import (CssBundle,
                                    JsBundle,
+                                   OtherFilesBundle,
                                    AbstractBundle)
 
 from static_bundle.builders import (Asset,
