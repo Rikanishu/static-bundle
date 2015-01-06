@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import os
-from static_bundle.utils import _prepare_path
+from static_bundle.utils import prepare_path
 
 
 class BuilderConfig(object):
@@ -9,9 +9,9 @@ class BuilderConfig(object):
      Standard builder config
      Used construct args for making
 
-     @type input_dir: one of (unicode, str)
-     @type output_dir: one of (unicode, str)
-     @type env: one of (unicode, str)
+     :type input_dir: str|unicode
+     :type output_dir: str|unicode
+     :type env: str|unicode
 
      """
 
@@ -24,7 +24,7 @@ class BuilderConfig(object):
 
     @classmethod
     def init_path(cls, path):
-        path = _prepare_path(path)
+        path = prepare_path(path)
         if os.path.isabs(path):
             return path
         return os.path.abspath(os.path.join(os.getcwd(), path))

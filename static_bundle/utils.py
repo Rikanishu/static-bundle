@@ -5,49 +5,49 @@ import shutil
 import codecs
 
 
-def _prepare_path(path):
+def prepare_path(path):
     """
     Path join helper method
     Join paths if list passed
 
-    @type path: one of (unicode, str, list)
-    @rtype: one of (unicode, str)
+    :type path: str|unicode|list
+    :rtype: str|unicode
     """
     if type(path) == list:
         return os.path.join(*path)
     return path
 
 
-def _read(file_path, encoding="utf-8"):
+def read_from_file(file_path, encoding="utf-8"):
     """
     Read helper method
 
-    @type file_path: one of (unicode, str)
-    @type encoding: one of (unicode, str)
-    @rtype: one of (unicode, str)
+    :type file_path: str|unicode
+    :type encoding: str|unicode
+    :rtype: str|unicode
     """
     with codecs.open(file_path, "r", encoding) as f:
         return f.read()
 
 
-def _write(file_path, contents, encoding="utf-8"):
+def write_to_file(file_path, contents, encoding="utf-8"):
     """
     Write helper method
 
-    @type file_path: one of (unicode, str)
-    @type contents: one of (unicode, str)
-    @type encoding: one of (unicode, str)
+    :type file_path: str|unicode
+    :type contents: str|unicode
+    :type encoding: str|unicode
     """
     with codecs.open(file_path, "w", encoding) as f:
         f.write(contents)
 
 
-def _copy_file(src, dest):
+def copy_file(src, dest):
     """
     Copy file helper method
 
-    @type src: one of (unicode, str)
-    @type dest: one of (unicode, str)
+    :type src: str|unicode
+    :type dest: str|unicode
     """
     dir_path = os.path.dirname(dest)
     if not os.path.exists(dir_path):
@@ -55,18 +55,18 @@ def _copy_file(src, dest):
     shutil.copy2(src, dest)
 
 
-def _get_path_extension(path):
+def get_path_extension(path):
     """
     Split file name and extension
 
-    @type path: one of (unicode, str)
-    @rtype: one of (unicode, str)
+    :type path: str|unicode
+    :rtype: one str|unicode
     """
     file_path, file_ext = os.path.splitext(path)
     return file_ext.lstrip('.')
 
 
-def _split_path(path):
+def split_path(path):
         """
         Helper method for absolute and relative paths resolution
         Split passed path and return each directory parts

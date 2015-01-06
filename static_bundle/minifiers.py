@@ -2,7 +2,7 @@
 
 import static_bundle
 from static_bundle import logger
-from static_bundle.utils import _read
+from static_bundle.utils import read_from_file
 
 
 class DefaultMinifier(object):
@@ -11,12 +11,14 @@ class DefaultMinifier(object):
     Provides methods that called in each steps of minify
 
     """
+    def __init__(self):
+        self.asset = None
 
     def init_asset(self, asset):
         """
         Called before build
 
-        @type asset: static_bundle.builders.Asset
+        :type asset: static_bundle.builders.Asset
         """
         self.asset = asset
 
@@ -25,7 +27,7 @@ class DefaultMinifier(object):
         Called before minify
         Returned text will be prepend on head
 
-        @rtype: one of (unicode, str)
+        :rtype: unicode
         """
         return u''
 
@@ -35,22 +37,22 @@ class DefaultMinifier(object):
         Must return file content
         Can be wrapped
 
-        @type f: static_bundle.files.StaticFileResult
-        @type text: one of (unicode, str)
-        @rtype: one of (unicode, str)
+        :type f: static_bundle.files.StaticFileResult
+        :type text: str|unicode
+        :rtype: str|unicode
         """
         text += self._read(f.abs_path) + "\r\n"
         return text
 
     def after(self, text):
         """
-        @type text: one of (unicode, str)
-        @rtype: one of (unicode, str)
+        @type text: str|unicode
+        @rtype: str|unicode
         """
         return text
 
     def _read(self, path):
-        return _read(path, self.asset.files_encoding)
+        return read_from_file(path, self.asset.files_encoding)
 
 
 class ExternalMinifier(DefaultMinifier):
@@ -61,6 +63,7 @@ class ExternalMinifier(DefaultMinifier):
     minifier_name = 'Minifier'
 
     def __init__(self, cmd=None):
+        super(ExternalMinifier, self).__init__()
         self.cmd = cmd
         if self.cmd is None:
             self.cmd = self.default_command
@@ -96,7 +99,6 @@ class ExternalMinifier(DefaultMinifier):
 
         return content
 
-
     def is_file_allowed(self, f):
         return True
 
@@ -108,6 +110,7 @@ class UglifyJsMinifier(ExternalMinifier):
 
     def is_file_allowed(self, f):
         return f.type == static_bundle.TYPE_JS
+
 
 class UglifyCssMinifier(ExternalMinifier):
 

@@ -6,17 +6,19 @@ import subprocess
 
 class AbstractPrepareHandler(object):
     """
-    Handlers is extensions of build process,
-    prepare links returned in bundle
+    Handler is extension for build process
+    Handler prepares links collected in bundle
 
-    Bundle doesn't check that input files exist
+    Bundle doesn't check that input file exists
+    Check file for existing first if you want to work with
+    file on disk
     """
 
     def prepare(self, input_files, bundle):
         """
-        @type input_files: list of static_bundle.files.StaticFileResult
-        @type bundle: static_bundle.bundles.AbstractBundle
-        @rtype: list
+        :type input_files: list[static_bundle.files.StaticFileResult]
+        :type bundle: list[static_bundle.bundles.AbstractBundle]
+        :rtype: list
         """
         raise NotImplementedError
 
@@ -38,9 +40,9 @@ class LessCompilerPrepareHandler(AbstractPrepareHandler):
 
     def prepare(self, input_files, bundle):
         """
-        @type input_files: list of static_bundle.files.StaticFileResult
-        @type bundle: static_bundle.bundles.AbstractBundle
-        @rtype: list
+        :type input_files: list[static_bundle.files.StaticFileResult]
+        :type bundle: list[static_bundle.bundles.AbstractBundle]
+        :rtype: list
         """
         out = []
         for input_file in input_files:
@@ -68,6 +70,7 @@ class LessCompilerPrepareHandler(AbstractPrepareHandler):
         if os.path.isfile(output_file.abs_path):
             out_modify_time = os.path.getmtime(output_file.abs_path)
         in_modify_time = os.path.getmtime(input_file.abs_path)
+        # todo: checking for imports modify time
         if in_modify_time >= out_modify_time or self.force:
             flags = ' '.join(self.compiler_flags)
             subprocess.call([self.cmd, flags, input_file.abs_path, output_file.abs_path], shell=False)

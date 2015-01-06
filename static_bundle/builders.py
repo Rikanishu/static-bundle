@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import os
-from static_bundle.utils import _write, _copy_file
+from static_bundle.utils import write_to_file, copy_file
 
 
 class Asset(object):
@@ -10,17 +10,17 @@ class Asset(object):
     Bundles in different build groups can be minified or prepared with different methods
     Objects has a fluent interface
 
-    @param name: unique name of build group in bundle
-    @param multitype: When multitype disabled, bundles will be checked for all having same type
+    :param name: unique name of build group in bundle
+    :param multitype: When multitype disabled, bundles will be checked for all having same type
         for example JS or CSS
-    @param minify: Use minify with [minifier]
+    :param minify: Use minify with [minifier]
 
-    @type builder: StandardBuilder
-    @type name: one of (unicode, str)
-    @type minifier: one of (static_bundle.minifiers.DefaultMinifier, None)
-    @type multitype: bool
-    @type minify: bool
-    @type files_encoding: str
+    :type builder: StandardBuilder
+    :type name: str|unicode
+    :type minifier: static_bundle.minifiers.DefaultMinifier
+    :type multitype: bool
+    :type minify: bool
+    :type files_encoding: str
     """
 
     def __init__(self, builder, name,
@@ -40,7 +40,7 @@ class Asset(object):
         """
         Add some bundle to build group
 
-        @type bundle: static_bundle.bundles.AbstractBundle
+        :type bundle: static_bundle.bundles.AbstractBundle
         @rtype: BuildGroup
         """
         if not self.multitype and self.has_bundles():
@@ -58,7 +58,7 @@ class Asset(object):
         """
         Return collected files links
 
-        @rtype: list[static_bundle.files.StaticFileResult]
+        :rtype: list[static_bundle.files.StaticFileResult]
         """
         self.files = []
         for bundle in self.bundles:
@@ -97,7 +97,7 @@ class StandardBuilder(object):
     Builder
     Provide build / collect links strategy for static files
 
-    @type config: static_bundle.configs.BuilderConfig
+    :type config: static_bundle.configs.BuilderConfig
     """
 
     def __init__(self, config):
@@ -108,8 +108,8 @@ class StandardBuilder(object):
         """
         Create asset
 
-        @type name: one of(unicode, str)
-        @rtype: Asset
+        :type name: unicode|str
+        :rtype: Asset
         """
         group = Asset(self, name, **kwargs)
         self.assets[name] = group
@@ -119,7 +119,7 @@ class StandardBuilder(object):
         """
         Remove asset by name
 
-        @type name: one of(unicode, str)
+        :type name: unicode|str
         """
         if name in self.assets:
             del self.assets[name]
@@ -128,7 +128,7 @@ class StandardBuilder(object):
         """
         Get asset by name
 
-        @type name: one of(unicode, str)
+        :type name: unicode|str
         """
         assert self.has_asset(name), "Asset is not created yet, use has_asset for checking"
         return self.assets[name]
@@ -137,7 +137,7 @@ class StandardBuilder(object):
         """
         Check asset exists by name
 
-        @type name: one of(unicode, str)
+        :type name: unicode|str
         """
         return name in self.assets
 
@@ -183,7 +183,7 @@ class StandardBuilder(object):
             for fpath in files:
                 current_file_path = os.path.join(root, fpath)
                 if current_file_path not in copy_excludes:
-                    _copy_file(current_file_path,
+                    copy_file(current_file_path,
                                current_file_path.replace(self.config.input_dir, self.config.output_dir, 1))
         self._minify()
 
@@ -201,7 +201,7 @@ class StandardBuilder(object):
                     for f in asset.files:
                         text = group_minifier.contents(f, text)
                     text = group_minifier.after(text)
-                    _write(asset_file_abs_path, text, asset.files_encoding)
+                    write_to_file(asset_file_abs_path, text, asset.files_encoding)
                 asset.files = [asset_file(asset_file_rel_path, asset_file_abs_path)]
 
     def _add_url_prefix(self):

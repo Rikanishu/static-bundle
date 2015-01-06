@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 import static_bundle
-from static_bundle.utils import _get_path_extension
+from static_bundle.utils import get_path_extension
 
 
 class StaticFileResult(object):
@@ -9,8 +9,8 @@ class StaticFileResult(object):
     Result file class
     This type represents each file after build
 
-    @type: path_relative: one of (unicode, str)
-    @type: path_absolute: one of (unicode, str, None)
+    :type: path_relative: str|unicode
+    :type: path_absolute: str|unicode
     """
 
     def __init__(self, relative_path, absolute_path=None):
@@ -30,7 +30,7 @@ class StaticFileResult(object):
     @property
     def extension(self):
         path = self.abs_path or self.rel_path
-        return _get_path_extension(path) if path else ''
+        return get_path_extension(path) if path else ''
 
 
 class CssFileResult(StaticFileResult):

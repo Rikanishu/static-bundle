@@ -2,7 +2,7 @@
 
 import os
 import static_bundle
-from static_bundle.utils import _prepare_path
+from static_bundle.utils import prepare_path
 from static_bundle.paths import FilePath, DirectoryPath
 from static_bundle.files import CssFileResult, JsFileResult
 from static_bundle.minifiers import DefaultMinifier, UglifyJsMinifier, UglifyCssMinifier
@@ -14,20 +14,20 @@ class AbstractBundle(object):
     Base bundle class
     Bundle is set of static files
 
-    @param path: Relative or absolute path
+    :param path: Relative or absolute path
         If is relative path, it will be concatenated with bundle input dir
-    @param: static_dir_name: Public static dir, used "static" by default
+    :param: static_dir_name: Public static dir, used "static" by default
 
-    @type path: one of (unicode, str)
-    @type prepare_handlers: one of (list, None)
+    :type path: str|unicode
+    :type prepare_handlers: list
     """
 
     def __init__(self, path, prepare_handlers=None):
-        path = _prepare_path(path)
+        path = prepare_path(path)
         abs_path = os.path.isabs(path)
         self.abs_path = abs_path
         if abs_path:
-            self.abs_bundle_path = _prepare_path(path)
+            self.abs_bundle_path = prepare_path(path)
             self.rel_bundle_path = None
         else:
             self.abs_bundle_path = None
@@ -52,37 +52,48 @@ class AbstractBundle(object):
         assert self.abs_path and self.abs_bundle_path, "Can't resolve absolute path in bundle"
         return self.abs_bundle_path
 
-    def init_build(self, build_group, builder):
+    def init_build(self, asset, builder):
         """
         Called when builder group collect files
         Resolves absolute url if relative passed
 
-        @type build_group:
-        @type builder: rdr.components.static_bundle.builders.StandardBuilder
+        :type asset: static_bundle.builders.Asset
+        :type builder: static_bundle.builders.StandardBuilder
         """
         if not self.abs_path:
             rel_path = self.rel_bundle_path
             if type(rel_path) is list:
-                rel_path = _prepare_path(rel_path)
-            self.abs_bundle_path = _prepare_path([builder.config.input_dir, rel_path])
+                rel_path = prepare_path(rel_path)
+            self.abs_bundle_path = prepare_path([builder.config.input_dir, rel_path])
             self.abs_path = True
         self.input_dir = builder.config.input_dir
 
     def add_file(self, file_path):
         """
         Add single file to bundle
-        @type: file_path: one of (unicode, str)
+
+        :type: file_path: str|unicode
         """
         self.files.append(FilePath(file_path, self))
+
+    def add_files(self, file_paths):
+        """
+        Add files list to bundle
+        Same as add_file but works with multiple paths
+
+        :param file_paths: list
+        """
+        for path in file_paths:
+            self.add_file(path)
 
     def add_directory(self, path, exclusions=None):
         """
         Add directory to bundle
 
-        @param exclusions: List of excluded paths
+        :param exclusions: List of excluded paths
 
-        @type: path: one of (unicode, str)
-        @type exclusions: list
+        :type path: str|unicode
+        :type exclusions: list
         """
         self.files.append(DirectoryPath(path, self, exclusions=exclusions))
 
@@ -90,7 +101,7 @@ class AbstractBundle(object):
         """
         Add custom path object
 
-        @type: path_object: static_bundle.paths.AbstractPath
+        :type: path_object: static_bundle.paths.AbstractPath
         """
         self.files.append(path_object)
 
@@ -98,7 +109,7 @@ class AbstractBundle(object):
         """
         Add prepare handler to bundle
 
-        @type: prepare_handler: static_bundle.handlers.AbstractPrepareHandler
+        :type: prepare_handler: static_bundle.handlers.AbstractPrepareHandler
         """
         self.prepare_handlers_chain.append(prepare_handler)
 
@@ -106,7 +117,7 @@ class AbstractBundle(object):
         """
         Called when builder run collect files in builder group
 
-        @rtype: list[static_bundle.files.StaticFileResult]
+        :rtype: list[static_bundle.files.StaticFileResult]
         """
         result_files = self.collect_files()
         for prepare_handler in self.prepare_handlers_chain:
