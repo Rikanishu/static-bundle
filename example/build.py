@@ -7,7 +7,8 @@ sys.path.append('..')
 from static_bundle import (JsBundle,
                            StandardBuilder,
                            BuilderConfig,
-                           CssBundle)
+                           CssBundle,
+                           OtherFilesBundle)
 
 css1 = CssBundle("css")
 css1.add_file("example1.less")
@@ -22,12 +23,15 @@ js2 = JsBundle("js/include")
 js2.add_file("app.js")
 js2.add_directory("modules")
 
+# all files in directory others
+other1 = OtherFilesBundle("others")
 
 def create_builder(conf):
     builder = StandardBuilder(conf)
     builder.create_asset("Styles").add_bundle(css1)
     builder.create_asset("Vendors", minify=True).add_bundle(js1)
     builder.create_asset("Application", minify=True).add_bundle(js2)
+    builder.create_asset("AllOtherFiles").add_bundle(other1)
     return builder
 
 

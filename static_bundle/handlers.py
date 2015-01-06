@@ -49,7 +49,6 @@ class LessCompilerPrepareHandler(AbstractPrepareHandler):
         for input_file in input_files:
             if input_file.extension == "less" and os.path.isfile(input_file.abs_path):
                 output_file = self.get_compile_file(input_file, bundle)
-                print output_file.abs_path, output_file.rel_path
                 self.compile(input_file, output_file)
                 out.append(output_file)
             else:
