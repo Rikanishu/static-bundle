@@ -3,7 +3,8 @@
 
 ---
 A set of base utilities which provide static management and builds making.
-Can be extended by inherit some system classes for your needs. For example with own PrepareHandler's and Bundle's.
+Can be extended by inherit some system classes for your needs. 
+For example with own PrepareHandler or Bundle.
 
 ### Installation ###
 
