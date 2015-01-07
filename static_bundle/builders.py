@@ -28,7 +28,7 @@ class Asset(object):
     def __init__(self, builder, name,
                  minifier=None, multitype=False,
                  minify=False, merge=False,
-                 files_encoding="utf-8"):
+                 merge_out_file=None, files_encoding="utf-8"):
         self.builder = builder
         self.name = name
         self.multitype = multitype
@@ -36,6 +36,7 @@ class Asset(object):
         self.minifier = minifier
         self.files_encoding = files_encoding
         self.merge = merge
+        self.merge_out_file = merge_out_file
 
         self.bundles = []
         self.files = []
@@ -191,7 +192,6 @@ class StandardBuilder(object):
         """
         Move files / make static build
         """
-
         for asset in self.assets.values():
             if asset.has_bundles():
                 asset.collect_files()
@@ -216,6 +216,10 @@ class StandardBuilder(object):
         self._minify()
 
     def clear(self, exclude=None):
+        """
+        Clear build output dir
+        :type exclude: list|None
+        """
         exclude = exclude or []
         for root, dirs, files in os.walk(self.config.output_dir):
             for f in files:
@@ -236,14 +240,34 @@ class StandardBuilder(object):
                     if asset.merge:
                         bundle = asset.get_first_bundle()
                         asset_file = bundle.get_file_cls()
-                        asset_file_name = asset.name + "." + bundle.get_extension()
-                        asset_file_abs_path = os.path.join(self.config.output_dir, asset_file_name)
-                        asset_file_rel_path = '/' + asset_file_name
+                        if asset.merge_out_file:
+                            asset_file_abs_path = os.path.join(self.config.output_dir, asset.merge_out_file)
+                            asset_file_rel_path = asset.merge_out_file
+                        else:
+                            asset_file_abs_path = None
+                            asset_file_rel_path = None
+                            for b in asset.bundles:
+                                if asset_file_abs_path is None:
+                                    asset_file_abs_path = b.abs_bundle_path
+                                elif asset_file_abs_path != b.abs_bundle_path:
+                                    raise Exception('Can\'t merge file with different bundle dirs, '
+                                                    'define the merge_out_file Asset property')
+                                if asset_file_rel_path is None:
+                                    asset_file_rel_path = b.rel_bundle_path
+                                elif asset_file_rel_path != b.rel_bundle_path:
+                                    raise Exception('Can\'t merge file with different bundle dirs, '
+                                                    'define the merge_out_file Asset property')
+                            asset_file_name = asset.name + "." + bundle.get_extension()
+                            asset_file_abs_path = os.path.join(self._get_output_path(asset_file_abs_path), asset_file_name)
+                            asset_file_rel_path = asset_file_rel_path + '/' + asset_file_name
                         if not emulate:
                             text = asset_minifier.before()
                             for f in asset.files:
                                 text = asset_minifier.contents(f, text)
                             text = asset_minifier.after(text)
+                            dirname = os.path.dirname(asset_file_abs_path)
+                            if not os.path.exists(dirname):
+                                os.makedirs(dirname)
                             write_to_file(asset_file_abs_path, text, asset.files_encoding)
                         asset.files = [asset_file(asset_file_rel_path, asset_file_abs_path)]
                     elif not emulate:
