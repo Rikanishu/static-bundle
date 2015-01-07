@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import sys
 import logging
+import types
 
 logger = logging.Logger('static_bundle')
 stdouthandler = logging.StreamHandler(sys.stdout)
@@ -21,6 +22,8 @@ TYPE_OTHER = 'other'
 
 ENV_PRODUCTION = 'production'
 ENV_DEVELOPMENT = 'development'
+
+BUNDLE_ITERABLE_TYPES = (list, tuple, types.GeneratorType)
 
 from static_bundle.minifiers import DefaultMinifier
 from static_bundle.configs import BuilderConfig

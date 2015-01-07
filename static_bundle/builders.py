@@ -37,22 +37,23 @@ class Asset(object):
         self.bundles = []
         self.files = []
 
-    def add_bundle(self, bundle):
+    def add_bundle(self, *args):
         """
         Add some bundle to build group
 
         :type bundle: static_bundle.bundles.AbstractBundle
         @rtype: BuildGroup
         """
-        if not self.multitype and self.has_bundles():
-            first_bundle = self.get_first_bundle()
-            if first_bundle.get_type() != bundle.get_type():
-                raise Exception(
-                    'Different bundle types for one BuildGroup: %s[%s -> %s]'
-                    'check types or set multitype parameter to True'
-                    % (self.name, first_bundle.get_type(), bundle.get_type())
-                )
-        self.bundles.append(bundle)
+        for bundle in args:
+            if not self.multitype and self.has_bundles():
+                first_bundle = self.get_first_bundle()
+                if first_bundle.get_type() != bundle.get_type():
+                    raise Exception(
+                        'Different bundle types for one Asset: %s[%s -> %s]'
+                        'check types or set multitype parameter to True'
+                        % (self.name, first_bundle.get_type(), bundle.get_type())
+                    )
+            self.bundles.append(bundle)
         return self
 
     def collect_files(self):
@@ -119,9 +120,9 @@ class StandardBuilder(object):
         :type name: unicode|str
         :rtype: Asset
         """
-        group = Asset(self, name, **kwargs)
-        self.assets[name] = group
-        return group
+        asset = Asset(self, name, **kwargs)
+        self.assets[name] = asset
+        return asset
 
     def remove_asset(self, name):
         """

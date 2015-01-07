@@ -63,7 +63,7 @@ class DirectoryPath(AbstractPath):
     """
     :type directory_path: str|unicode
     :type bundle: static_bundle.bundles.AbstractBundle
-    :type exclusions: list
+    :type exclusions: list|None
     """
 
     def __init__(self, directory_path, bundle=None, exclusions=None):

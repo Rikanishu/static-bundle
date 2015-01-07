@@ -2,7 +2,7 @@
 
 import os
 import static_bundle
-from static_bundle.utils import prepare_path
+from static_bundle import utils
 from static_bundle.paths import FilePath, DirectoryPath
 from static_bundle.files import CssFileResult, JsFileResult, OtherFileResult
 from static_bundle.minifiers import DefaultMinifier, UglifyJsMinifier, UglifyCssMinifier
@@ -23,11 +23,11 @@ class AbstractBundle(object):
     """
 
     def __init__(self, path, prepare_handlers=None):
-        path = prepare_path(path)
+        path = utils.prepare_path(path)
         abs_path = os.path.isabs(path)
         self.abs_path = abs_path
         if abs_path:
-            self.abs_bundle_path = prepare_path(path)
+            self.abs_bundle_path = utils.prepare_path(path)
             self.rel_bundle_path = None
         else:
             self.abs_bundle_path = None
@@ -55,58 +55,55 @@ class AbstractBundle(object):
         :type builder: static_bundle.builders.StandardBuilder
         """
         if not self.abs_path:
-            rel_path = prepare_path(self.rel_bundle_path)
-            self.abs_bundle_path = prepare_path([builder.config.input_dir, rel_path])
+            rel_path = utils.prepare_path(self.rel_bundle_path)
+            self.abs_bundle_path = utils.prepare_path([builder.config.input_dir, rel_path])
             self.abs_path = True
         self.input_dir = builder.config.input_dir
 
-    def add_file(self, file_path):
+    def add_file(self, *args):
         """
-        Add single file to bundle
+        Add single file or list of files to bundle
 
         :type: file_path: str|unicode
         """
-        self.files.append(FilePath(file_path, self))
+        for file_path in args:
+            self.files.append(FilePath(file_path, self))
 
-    def add_files(self, file_paths):
+    def add_directory(self, *args, **kwargs):
         """
-        Add files list to bundle
-        Same as add_file but works with multiple paths
-
-        :param file_paths: list
-        """
-        for path in file_paths:
-            self.add_file(path)
-
-    def add_directory(self, path, exclusions=None):
-        """
-        Add directory to bundle
+        Add directory or directories list to bundle
 
         :param exclusions: List of excluded paths
 
         :type path: str|unicode
         :type exclusions: list
         """
-        self.files.append(DirectoryPath(path, self, exclusions=exclusions))
+        exc = kwargs.get('exclusions', None)
+        for path in args:
+            self.files.append(DirectoryPath(path, self, exclusions=exc))
 
-    def add_path_object(self, path_object):
+    def add_path_object(self, *args):
         """
-        Add custom path object
+        Add custom path objects
 
         :type: path_object: static_bundle.paths.AbstractPath
         """
-        path_object.bundle = self
-        self.files.append(path_object)
+        for obj in args:
+            obj.bundle = self
+            self.files.append(obj)
 
-    def add_prepare_handler(self, prepare_handler):
+    def add_prepare_handler(self, prepare_handlers):
         """
         Add prepare handler to bundle
 
         :type: prepare_handler: static_bundle.handlers.AbstractPrepareHandler
         """
+        if not isinstance(prepare_handlers, static_bundle.BUNDLE_ITERABLE_TYPES):
+            prepare_handlers = [prepare_handlers]
         if self.prepare_handlers_chain is None:
             self.prepare_handlers_chain = []
-        self.prepare_handlers_chain.append(prepare_handler)
+        for handler in prepare_handlers:
+            self.prepare_handlers_chain.append(handler)
 
     def prepare(self):
         """
