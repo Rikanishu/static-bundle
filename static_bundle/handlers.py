@@ -74,7 +74,10 @@ class LessCompilerPrepareHandler(AbstractPrepareHandler):
             )
 
     def replace_file_name(self, path):
-        return path.replace(".less", self.postfix + ".css")
+        basename = os.path.basename(path)
+        split_basename = os.path.splitext(basename)
+        dirname = os.path.dirname(path)
+        return os.path.join(dirname, self.prefix + split_basename[0] + self.postfix + '.css')
 
     def compile(self, input_file, output_file):
         out_modify_time = -1
