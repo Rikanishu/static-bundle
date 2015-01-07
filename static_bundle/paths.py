@@ -52,8 +52,7 @@ class FilePath(AbstractPath):
         """
         :inheritdoc
         """
-        if self.bundle is None:
-            raise Exception('Cannot fetch file name with empty bundle')
+        assert self.bundle, 'Cannot fetch file name with empty bundle'
         abs_path, rel_path = self.get_abs_and_rel_paths(self.bundle.path, self.file_path, self.bundle.input_dir)
         file_cls = self.bundle.get_file_cls()
         return [file_cls(rel_path, abs_path)]
@@ -75,8 +74,7 @@ class DirectoryPath(AbstractPath):
         """
         :inheritdoc
         """
-        if self.bundle is None:
-            raise Exception('Cannot fetch file names with empty bundle')
+        assert self.bundle, 'Cannot fetch directory name with empty bundle'
         result_files = []
         bundle_ext = self.bundle.get_extension()
         ext = "." + bundle_ext if bundle_ext else None

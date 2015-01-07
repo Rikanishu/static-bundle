@@ -26,7 +26,8 @@ class Asset(object):
 
     def __init__(self, builder, name,
                  minifier=None, multitype=False,
-                 minify=False, files_encoding="utf-8"):
+                 minify=False, merge=False,
+                 files_encoding="utf-8"):
         self.builder = builder
         self.name = name
         self.multitype = multitype
@@ -220,18 +221,25 @@ class StandardBuilder(object):
             if asset.minify and asset.files:
                 asset_minifier = asset.get_minifier()
                 if asset_minifier:
-                    bundle = asset.get_first_bundle()
-                    asset_file = bundle.get_file_cls()
-                    asset_file_name = asset.name + "." + bundle.get_extension()
-                    asset_file_abs_path = os.path.join(self.config.output_dir, asset_file_name)
-                    asset_file_rel_path = '/' + asset_file_name
-                    if not emulate:
-                        text = asset_minifier.before()
+                    if asset.merge:
+                        bundle = asset.get_first_bundle()
+                        asset_file = bundle.get_file_cls()
+                        asset_file_name = asset.name + "." + bundle.get_extension()
+                        asset_file_abs_path = os.path.join(self.config.output_dir, asset_file_name)
+                        asset_file_rel_path = '/' + asset_file_name
+                        if not emulate:
+                            text = asset_minifier.before()
+                            for f in asset.files:
+                                text = asset_minifier.contents(f, text)
+                            text = asset_minifier.after(text)
+                            write_to_file(asset_file_abs_path, text, asset.files_encoding)
+                        asset.files = [asset_file(asset_file_rel_path, asset_file_abs_path)]
+                    elif not emulate:
                         for f in asset.files:
+                            text = asset_minifier.before()
                             text = asset_minifier.contents(f, text)
-                        text = asset_minifier.after(text)
-                        write_to_file(asset_file_abs_path, text, asset.files_encoding)
-                    asset.files = [asset_file(asset_file_rel_path, asset_file_abs_path)]
+                            text = asset_minifier.after(text)
+                            write_to_file(f.abs_path, text, asset.files_encoding)
                 else:
                     static_bundle.logger.warning("Minifier is not defined for asset. Skipped.")
 
