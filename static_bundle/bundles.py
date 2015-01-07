@@ -16,7 +16,7 @@ class AbstractBundle(object):
 
     :param path: Relative or absolute path
         If is relative path, it will be concatenated with bundle input dir
-    :param: static_dir_name: Public static dir, used "static" by default
+    :param static_dir_name: Public static dir, used "static" by default
 
     :type path: str|unicode
     :type prepare_handlers: list

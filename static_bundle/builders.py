@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 import os
+import shutil
 import static_bundle
 from static_bundle.utils import write_to_file, copy_file
 
@@ -213,6 +214,16 @@ class StandardBuilder(object):
                     if current_file_path not in copy_excludes:
                         copy_file(current_file_path, self._get_output_path(current_file_path))
         self._minify()
+
+    def clear(self, exclude=None):
+        exclude = exclude or []
+        for root, dirs, files in os.walk(self.config.output_dir):
+            for f in files:
+                if f not in exclude:
+                    os.unlink(os.path.join(root, f))
+            for d in dirs:
+                if d not in exclude:
+                    shutil.rmtree(os.path.join(root, d))
 
     def _get_output_path(self, path):
         return path.replace(self.config.input_dir, self.config.output_dir, 1)
