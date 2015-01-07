@@ -34,6 +34,7 @@ class Asset(object):
         self.minify = minify or minifier is not None
         self.minifier = minifier
         self.files_encoding = files_encoding
+        self.merge = merge
 
         self.bundles = []
         self.files = []
@@ -199,7 +200,7 @@ class StandardBuilder(object):
             for asset in self.assets.values():
                 if not asset.minify and asset.files:
                     for f in asset.files:
-                        self._copy_file(f.abs_path)
+                        copy_file(f.abs_path, self._get_output_path(f.abs_path))
         else:
             copy_excludes = {}
             for asset in self.assets.values():
@@ -210,11 +211,11 @@ class StandardBuilder(object):
                 for fpath in files:
                     current_file_path = os.path.join(root, fpath)
                     if current_file_path not in copy_excludes:
-                        self._copy_file(current_file_path)
+                        copy_file(current_file_path, self._get_output_path(current_file_path))
         self._minify()
 
-    def _copy_file(self, path):
-        copy_file(path, path.replace(self.config.input_dir, self.config.output_dir, 1))
+    def _get_output_path(self, path):
+        return path.replace(self.config.input_dir, self.config.output_dir, 1)
 
     def _minify(self, emulate=False):
         for asset in self.assets.values():
@@ -239,7 +240,11 @@ class StandardBuilder(object):
                             text = asset_minifier.before()
                             text = asset_minifier.contents(f, text)
                             text = asset_minifier.after(text)
-                            write_to_file(f.abs_path, text, asset.files_encoding)
+                            out_path = self._get_output_path(f.abs_path)
+                            dirname = os.path.dirname(out_path)
+                            if not os.path.exists(dirname):
+                                os.makedirs(dirname)
+                            write_to_file(out_path, text, asset.files_encoding)
                 else:
                     static_bundle.logger.warning("Minifier is not defined for asset. Skipped.")
 

@@ -28,9 +28,9 @@ other1 = OtherFilesBundle("others")
 
 def create_builder(conf):
     builder = StandardBuilder(conf)
-    builder.create_asset("Styles").add_bundle(css1)
-    builder.create_asset("Vendors", minify=True).add_bundle(js1)
-    builder.create_asset("Application", minify=True).add_bundle(js2)
+    builder.create_asset("Styles", minify=True).add_bundle(css1)
+    builder.create_asset("Vendors", minify=True, merge=True).add_bundle(js1)
+    builder.create_asset("Application", minify=True, merge=True).add_bundle(js2)
     builder.create_asset("AllOtherFiles").add_bundle(other1)
     return builder
 
