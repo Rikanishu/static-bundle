@@ -6,9 +6,9 @@ A set of base utilities which provide static management and builds making.
 
 It primary aims to single-page applications and was developed to create conveinment working environment primary for AngularJS but it may work with another architectures, not even with SPA, on development and build release (production) modes. 
 
-The library is not production ready yet.
-
 It has extensible architectre, some system classes can be extended for your needs. 
+
+The library is not production ready yet.
 
 ### Installation ###
 
