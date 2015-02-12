@@ -67,6 +67,7 @@ js1.add_file("vendors/example2.js")
 js2 = JsBundle("js/include")
 # modules depends on app.js
 js2.add_file("app.js")
+# this step adds all JS files in modules dir
 js2.add_directory("modules")
 
 ...
