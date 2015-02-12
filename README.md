@@ -3,8 +3,12 @@
 
 ---
 A set of base utilities which provide static management and builds making.
-Can be extended by inherit some system classes for your needs. 
-For example with own PrepareHandler or Bundle.
+
+It primary aims to single-page application and was developed to create conveinment working environment primary for AngularJS but it may work with another architectures, not even with SPA, on development and build relaese (production) modes. 
+
+The library is not production ready yet.
+
+It has extensible architectre, some system classes can be extended for your needs. 
 
 ### Installation ###
 
