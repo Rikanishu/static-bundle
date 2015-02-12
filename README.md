@@ -4,7 +4,7 @@
 ---
 A set of base utilities which provide static management and builds making.
 
-It primary aims to single-page application and was developed to create conveinment working environment primary for AngularJS but it may work with another architectures, not even with SPA, on development and build relaese (production) modes. 
+It primary aims to single-page applications and was developed to create conveinment working environment primary for AngularJS but it may work with another architectures, not even with SPA, on development and build relaese (production) modes. 
 
 The library is not production ready yet.
 
