@@ -1,8 +1,8 @@
 # static-bundle #
-**Yet another static manager for Python**
+**Yet another asset management library for Python**
 
 ---
-A set of base utilities which provide static management and builds making.
+A set of base utilities which provide asset management and builds making.
 
 It primary aims to single-page applications and was developed to create conveinment working environment primary for AngularJS but it may work with another architectures, not even with SPA, on development and build release (production) modes. 
 
@@ -29,7 +29,7 @@ or from sources
 
 See ```examples/bundles``` or check this example.
 
-Suppose your application has the following static files directory tree:
+Suppose your application has the following asset files directory tree:
 
 ```
 ├── css
