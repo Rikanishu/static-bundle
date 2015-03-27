@@ -6,7 +6,7 @@ A set of base utilities which provide asset management and builds making.
 
 It primary aims to single-page applications and was developed to create conveinment working environment primary for AngularJS but it may work with another architectures, not even with SPA, on development and release-building (production) environments. 
 
-The library has extensible architectre, some system classes can be extended for your needs. 
+The library has extensible architecture, some system classes can be extended for your needs. 
 
 ### Installation ###
 
