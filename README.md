@@ -8,8 +8,6 @@ It primary aims to single-page applications and was developed to create conveinm
 
 It has extensible architectre, some system classes can be extended for your needs. 
 
-The library is not production ready yet.
-
 ### Installation ###
 
 Via pip:
